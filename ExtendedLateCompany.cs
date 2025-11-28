@@ -17,6 +17,7 @@ internal class ExtendedLateCompany : BaseUnityPlugin
 		Harmony harmony = new Harmony(MyPluginInfo.PLUGIN_GUID);
 		harmony.PatchAll(typeof(ExtendedLateCompany).Assembly);
 		Logger.Log(LogLevel.Info, "Extended Late Company has loaded!");
+
 	}
     public static bool LobbyJoinable = true;
     static public void SetLobbyJoinable(bool joinable)
