@@ -102,13 +102,6 @@ internal static class StartOfRoundPatch
                 bool hasOpenSlot = StartOfRound.Instance.connectedPlayersAmount + 1 < StartOfRound.Instance.allPlayerScripts.Length;
                 if (hasOpenSlot)
                 {
-                    if(hasOpenSlot)
-                    {
-                        
-                        int num1 = StartOfRound.Instance.connectedPlayersAmount;
-                        GameNetworkManager.Instance.connectedPlayers = num1;
-
-                    }
                     SetLobbyVisibility(true);
                     ExtendedLateCompany.SetLobbyJoinable(true);
                 }
@@ -172,12 +165,6 @@ internal static class StartOfRoundPatch
             bool hasOpenSlot = StartOfRound.Instance.connectedPlayersAmount + 1 < StartOfRound.Instance.allPlayerScripts.Length;
             SetLobbyVisibility(hasOpenSlot);
             ExtendedLateCompany.SetLobbyJoinable(hasOpenSlot);
-            if(hasOpenSlot)
-            {
-            int num1 = StartOfRound.Instance.connectedPlayersAmount;
-            GameNetworkManager.Instance.connectedPlayers = num1+1;
-            }
-
         }
     }
 }
