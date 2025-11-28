@@ -19,10 +19,10 @@ internal static class ConnectionApproval_Patch
 	private static void Postfix(ref NetworkManager.ConnectionApprovalRequest request, ref NetworkManager.ConnectionApprovalResponse response) {
 		if (request.ClientNetworkId == NetworkManager.Singleton.LocalClientId)
 			return;
-		if (ExtendedLateCompany.LobbyJoinable && response.Reason == "Game has already started!") {
+		if (ExtendedLateCompany.LobbyJoinable && response.Reason == "Game has already started!")
+		{
 			response.Reason = "";
 			response.Approved = true;
 		}
 	}
 }
-

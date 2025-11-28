@@ -13,6 +13,7 @@ namespace ExtendedLateCompany.Patches;
 
 internal static class StartOfRoundPatch
 {
+    
     private static void SetLobbyVisibility(bool visible)
     {
         if (!GameNetworkManager.Instance.currentLobby.HasValue) return;
@@ -20,21 +21,24 @@ internal static class StartOfRoundPatch
         ExtendedLateCompany.SetLobbyJoinable(visible);
         lobby.SetData("joinable", visible ? "true" : "false");
     }
+
     [HarmonyPatch(typeof(StartOfRound), "OnPlayerConnectedClientRpc")]
     [HarmonyWrapSafe]
     private static class OnPlayerConnectedClientRpc_Patch
     {
         private static void UpdateControlledState()
         {
+            
             for (int j = 0; j < StartOfRound.Instance.connectedPlayersAmount + 1; j++)
             {
-                if ((j == 0 || !StartOfRound.Instance.allPlayerScripts[j].IsOwnedByServer) && 
-                    !StartOfRound.Instance.allPlayerScripts[j].isPlayerDead)
+                
+                if ((j == 0 || !StartOfRound.Instance.allPlayerScripts[j].IsOwnedByServer) && !StartOfRound.Instance.allPlayerScripts[j].isPlayerDead)
                 {
                     StartOfRound.Instance.allPlayerScripts[j].isPlayerControlled = true;
                 }
             }
         }
+
         [HarmonyTranspiler]
         private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
@@ -42,6 +46,7 @@ internal static class StartOfRoundPatch
             bool foundInitial = false;
             bool shouldSkip = false;
             bool alreadyReplaced = false;
+
             foreach (var instruction in instructions)
             {
                 if (!alreadyReplaced)
@@ -67,10 +72,13 @@ internal static class StartOfRoundPatch
                 if (!shouldSkip)
                     newInstructions.Add(instruction);
             }
+
             if (!alreadyReplaced) 
-                Debug.LogError("LateCompany: Failed to transpile OnPlayerConnectedClientRpc");
+                ExtendedLateCompany.Logger.LogError("LateCompany: Failed to transpile OnPlayerConnectedClientRpc");
+
             return newInstructions.AsEnumerable();
         }
+
         [HarmonyPostfix]
         private static void Postfix()
         {
@@ -81,6 +89,7 @@ internal static class StartOfRoundPatch
             }
         }
     }
+
     [HarmonyPatch(typeof(StartOfRound), nameof(StartOfRound.OnPlayerDC))]
     [HarmonyWrapSafe]
     private static class OnPlayerDC_Patch
@@ -93,10 +102,18 @@ internal static class StartOfRoundPatch
                 bool hasOpenSlot = StartOfRound.Instance.connectedPlayersAmount + 1 < StartOfRound.Instance.allPlayerScripts.Length;
                 if (hasOpenSlot)
                 {
+                    if(hasOpenSlot)
+                    {
+                        
+                        int num1 = StartOfRound.Instance.connectedPlayersAmount;
+                        GameNetworkManager.Instance.connectedPlayers = num1;
+
+                    }
                     SetLobbyVisibility(true);
                     ExtendedLateCompany.SetLobbyJoinable(true);
                 }
             }
+
             PlayerControllerB player = StartOfRound.Instance.allPlayerScripts[playerObjectNumber];
             player.activatingItem = false;
             player.bleedingHeavily = false;
@@ -134,6 +151,7 @@ internal static class StartOfRoundPatch
             player.voiceMuffledByEnemy = false;
         }
     }
+
     [HarmonyPatch(typeof(StartOfRound), nameof(StartOfRound.StartGame))]
     private static class StartGame_Patch
     {
@@ -144,6 +162,7 @@ internal static class StartOfRoundPatch
             ExtendedLateCompany.SetLobbyJoinable(false);
         }
     }
+
     [HarmonyPatch(typeof(StartOfRound), "SetShipReadyToLand")]
     private static class SetShipReadyToLand_Patch
     {
@@ -153,6 +172,12 @@ internal static class StartOfRoundPatch
             bool hasOpenSlot = StartOfRound.Instance.connectedPlayersAmount + 1 < StartOfRound.Instance.allPlayerScripts.Length;
             SetLobbyVisibility(hasOpenSlot);
             ExtendedLateCompany.SetLobbyJoinable(hasOpenSlot);
+            if(hasOpenSlot)
+            {
+            int num1 = StartOfRound.Instance.connectedPlayersAmount;
+            GameNetworkManager.Instance.connectedPlayers = num1+1;
+            }
+
         }
     }
 }
