@@ -1,6 +1,6 @@
 # ExtendedLateCompany
 
-This is a forked version of the original LateCompany aiming at fixing bugs and adding new features to the original.
+This is a forked version of the original LateCompany aiming at fixing the bugs and adding new features to the original.
 
 Lets players join you after the game has started.
 
@@ -11,3 +11,4 @@ Huge thanks to the original creator of the mod - https://github.com/ANormalTwig/
 ## Info
 
 Please report any bugs you find on the github repository!
+
