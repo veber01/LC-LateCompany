@@ -1,6 +1,11 @@
+# v1.0.2
+
+- After the game has started and the lobby was reopened it wasnt properly showing the amount of players present in the lobby. It should be fixed and should show up properly.
+- Also modified some other stuff.
+
 # v1.0.1
 
-- An attemt to fix players having the name "Unknown" when joining in late. It does work but in some edge cases it still produces "Unknown" name in the chat (when someone who joined in late and then leaves it'll say in chat that "Unkown" has left)
+- Added a logic to try to fix players having the name "Unknown" when joining in late.
 
 
 # v1.0.0
