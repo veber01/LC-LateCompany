@@ -22,6 +22,8 @@ internal class ExtendedLateCompany : BaseUnityPlugin
     public static bool LobbyJoinable = true;
     static public void SetLobbyJoinable(bool joinable)
     {
+		int num1 = StartOfRound.Instance.connectedPlayersAmount;
+        GameNetworkManager.Instance.connectedPlayers = num1;
 		LobbyJoinable = joinable;
 		GameNetworkManager.Instance.SetLobbyJoinable(joinable);
 		QuickMenuManager quickMenu = Object.FindObjectOfType<QuickMenuManager>();
