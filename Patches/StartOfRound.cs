@@ -74,7 +74,7 @@ internal static class StartOfRoundPatch
             }
 
             if (!alreadyReplaced) 
-                ExtendedLateCompany.Logger.LogError("LateCompany: Failed to transpile OnPlayerConnectedClientRpc");
+                ExtendedLateCompany.Logger.LogError("ELC: Failed to transpile OnPlayerConnectedClientRpc");
 
             return newInstructions.AsEnumerable();
         }

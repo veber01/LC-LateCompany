@@ -30,57 +30,98 @@ namespace ExtendedLateCompany
             try
             {
                 var player = StartOfRound.Instance.allPlayerScripts[assignedPlayerObjectId];
-                if (player == null) return;
+                if (player == null)
+                {
+                    ExtendedLateCompany.Logger.LogError($"[ELC] ERROR in FRE: Player object is NULL for playerID {assignedPlayerObjectId}");
+                    return;
+                }
                 if (NetworkManager.Singleton != null && NetworkManager.Singleton.IsServer)
                 {
                     var ps = player.GetComponent<PlayerScript>();
                     if (ps == null)
                     {
-                        ps = player.gameObject.AddComponent<PlayerScript>();
+                        try
+                        {
+                            ps = player.gameObject.AddComponent<PlayerScript>();
+                        }
+                        catch (Exception ex)
+                        {
+                            ExtendedLateCompany.Logger.LogError($"[ELC] ERROR in FRE: Failed to add PlayerScript to player {player.name}: {ex}");
+                            return;
+                        }
                     }
 
-                    ps.FixRenderersClientRpc();
+                    if (ps != null)
+                    {
+                        ps.FixRenderersClientRpc();
+                    }
+                    else
+                    {
+                        ExtendedLateCompany.Logger.LogError($"[ELC] ERROR in FRE: PlayerScript is still null for player {player.name}");
+                    }
+                }
+                else if (NetworkManager.Singleton == null)
+                {
+                    ExtendedLateCompany.Logger.LogError("[ELC] ERROR in FRE: NetworkManager.Singleton is null");
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                ExtendedLateCompany.Logger.LogError($"[ELC] EXCEPTION in FRE: {ex}");
             }
         }
         public static void EnableRenderersAndResetState(GameObject player)
         {
-            foreach (var smr in player.GetComponentsInChildren<SkinnedMeshRenderer>(true))
+            if (player == null)
             {
-                if (ShouldSkipRenderer(smr.gameObject.name)) continue;
-                smr.enabled = true;
+                ExtendedLateCompany.Logger.LogError("[ELC] ERROR in FRE: player GameObject is null in EnableRenderersAndResetState");
+                return;
             }
-            foreach (var r in player.GetComponentsInChildren<Renderer>(true))
+            try
             {
-                if (ShouldSkipRenderer(r.gameObject.name)) continue;
-                r.enabled = true;
-            }
-            Animator animator = player.GetComponentInChildren<Animator>(true);
-            if (animator != null)
-            {
-                animator.enabled = true;
-            }
-            if (!player.activeSelf)
-            {
-                player.SetActive(true);
-            }
-            var playerScript = player.GetComponent<PlayerControllerB>();
-            if (playerScript != null)
-            {
-                playerScript.health = 100;
-                playerScript.bleedingHeavily = false;
-                playerScript.criticallyInjured = false;
-                playerScript.disableMoveInput = false;
-                playerScript.disableLookInput = false;
-                playerScript.disableInteract = false;
+                foreach (var smr in player.GetComponentsInChildren<SkinnedMeshRenderer>(true))
+                {
+                    if (ShouldSkipRenderer(smr.gameObject.name)) continue;
+                    smr.enabled = true;
+                }
+                foreach (var r in player.GetComponentsInChildren<Renderer>(true))
+                {
+                    if (ShouldSkipRenderer(r.gameObject.name)) continue;
+                    r.enabled = true;
+                }
+                Animator animator = player.GetComponentInChildren<Animator>(true);
+                if (animator != null)
+                {
+                    animator.enabled = true;
+                }
+                if (!player.activeSelf)
+                {
+                    player.SetActive(true);
+                }
+                var playerScript = player.GetComponent<PlayerControllerB>();
+                if (playerScript != null)
+                {
+                    playerScript.health = 100;
+                    playerScript.bleedingHeavily = false;
+                    playerScript.criticallyInjured = false;
+                    playerScript.disableMoveInput = false;
+                    playerScript.disableLookInput = false;
+                    playerScript.disableInteract = false;
 
-                if (playerScript.playerBodyAnimator != null)
-                    playerScript.playerBodyAnimator.SetBool("Limp", false);
+                    if (playerScript.playerBodyAnimator != null)
+                        playerScript.playerBodyAnimator.SetBool("Limp", false);
+                }
+                else
+                {
+                    ExtendedLateCompany.Logger.LogError($"[ELC] ERROR in FRE: PlayerControllerB component missing on player {player.name}");
+                }
+            }
+            catch (Exception ex)
+            {
+                ExtendedLateCompany.Logger.LogError($"[ELC] EXCEPTION in FRE in EnableRenderersAndResetState: {ex}");
             }
         }
+
         private static bool ShouldSkipRenderer(string name)
         {
             foreach (var bad in forbiddenNames)

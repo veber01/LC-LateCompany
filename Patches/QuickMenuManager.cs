@@ -29,7 +29,6 @@ internal static class RefreshMenuNamesPatch
         NameSync.ApplyNames();
     }
 }
-
 public static class NameSync
 {
     public static void ApplyNames()
