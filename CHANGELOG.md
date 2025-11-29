@@ -1,3 +1,11 @@
+# v1.0.4
+
+- Attempt fix late-joining players appearing invisible or desynced by enabling renderers, animator, and resetting player state automatically.
+
+# v1.0.3
+
+- Hotfix what i broke.
+
 # v1.0.2
 
 - After the game has started and the lobby was reopened it wasnt properly showing the amount of players present in the lobby. It should be fixed and should show up properly.
