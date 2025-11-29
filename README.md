@@ -10,5 +10,4 @@ Huge thanks to the original creator of the mod - https://github.com/ANormalTwig/
 
 ## Info
 
-Please report any bugs you find on the github repository!
-
+Please report any bugs you find on the github repository or my discord "happyness"
