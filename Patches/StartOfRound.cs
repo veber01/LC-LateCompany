@@ -165,6 +165,8 @@ internal static class StartOfRoundPatch
             bool hasOpenSlot = StartOfRound.Instance.connectedPlayersAmount + 1 < StartOfRound.Instance.allPlayerScripts.Length;
             SetLobbyVisibility(hasOpenSlot);
             ExtendedLateCompany.SetLobbyJoinable(hasOpenSlot);
+            int something = 0;
+            PlayerNameFixPatch.OnPlayerJoinedPostfix(something);
         }
     }
 }
