@@ -1,5 +1,9 @@
-# v1.0.5
+# v1.0.6
 # This is a beta release, it wasnt fully tested, there could be issues related to new fixes that i added. Please report any bugs and errors on the Github page or my discord "happyness"
+
+- Reworking the fix for having "Unknown" names.
+
+# v1.0.5
 - Removed a broken logic. It was causing issues with some other mods.
 
 # v1.0.4

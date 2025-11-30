@@ -1,6 +1,6 @@
 {
 	"name": "ExtendedLateCompany",
-	"version_number": "1.0.5",
+	"version_number": "1.0.6",
 	"website_url": "https://github.com/veber01/LC-LateCompany",
 	"description": "A mod to allow players to join after the game starts.",
 	"dependencies": [
