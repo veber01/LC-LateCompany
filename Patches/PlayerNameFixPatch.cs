@@ -1,43 +1,122 @@
 using HarmonyLib;
 using UnityEngine;
+using GameNetcodeStuff;
+using Steamworks;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Reflection;
+using System.Text;
+using TMPro;
+using System.Runtime.CompilerServices;
+
 
 namespace ExtendedLateCompany.Patches
 {
-    [HarmonyPatch]
-    public class PlayerNameFixPatch
+    [HarmonyWrapSafe]
+    public static class PlayerNameFixPatch
     {
-        [HarmonyPatch(typeof(StartOfRound), "OnPlayerConnectedClientRpc")]
-        [HarmonyPostfix]
-        public static void OnPlayerJoinedPostfix(int assignedPlayerObjectId)
+        private static void RefreshAllPlayerNames()
         {
-            QuickMenuManager quickMenu = Object.FindObjectOfType<QuickMenuManager>();
+            var sor = StartOfRound.Instance;
+            var gnm = GameNetworkManager.Instance;
+            if (sor == null || gnm == null) return;
+            if (gnm.disableSteam) return;
+            if (sor.allPlayerScripts == null) return;
+            UpdateQuickMenuNames();
+            UpdateBillboardNames();
+            UpdateMapScreenName();
+        }
+        private static void UpdateQuickMenuNames()
+        {
+            var sor = StartOfRound.Instance;
+            var quickMenu = UnityEngine.Object.FindObjectOfType<QuickMenuManager>();
             if (quickMenu == null) return;
-            var player = StartOfRound.Instance.allPlayerScripts[assignedPlayerObjectId];
-            if (player == null) return;
-            string finalName = player.playerUsername;
-            ulong steamId = player.playerSteamId;
-            ExtendedLateCompany.Logger.LogWarning($"[ELC] finalName: {finalName} SteamID: {steamId}");
-            for (int i = 0; i < quickMenu.playerListSlots.Length; i++)
-            {
-                var slot = quickMenu.playerListSlots[i];
-                if (slot == null) continue;
-                ExtendedLateCompany.Logger.LogWarning($"[ELC] Slot {i} SteamID: {slot.playerSteamId}");
-                bool match = slot.playerSteamId == steamId;
-                bool empty = slot.playerSteamId == 0;
-                if ((match || empty) && (slot.usernameHeader.text != finalName || slot.playerSteamId != steamId))
-                {
-                    ExtendedLateCompany.Logger.LogWarning(
-                        $"[ELC] Updating slot {i}: OldName='{slot.usernameHeader.text}' → NewName='{finalName}'"
-                    );
 
-                    ExtendedLateCompany.Logger.LogWarning(
-                        $"[ELC] Updating slot {i}: OldSteamID='{slot.playerSteamId}' → NewSteamID='{steamId}'"
-                    );
-                    slot.usernameHeader.text = finalName;
-                    slot.playerSteamId = steamId;
-                    break;
+            for (int i = 0; i < sor.allPlayerScripts.Length; i++)
+            {
+                var player = sor.allPlayerScripts[i];
+                var slot = quickMenu.playerListSlots[i];
+                if (player.playerSteamId == 0)
+                {
+                    if (slot.slotContainer.activeSelf)
+                        slot.slotContainer.SetActive(false);
+                    continue;
+                }
+                if (!slot.slotContainer.activeSelf)
+                    slot.slotContainer.SetActive(true);
+                var steamName = new Friend(player.playerSteamId).Name;
+                if (steamName == "[unknown]") continue;
+
+                if (slot.usernameHeader.text != steamName)
+                {
+                    slot.usernameHeader.text = steamName;
+                    slot.playerSteamId = player.playerSteamId;
                 }
             }
+        }
+        private static void UpdateBillboardNames()
+        {
+            var sor = StartOfRound.Instance;
+
+            foreach (var player in sor.allPlayerScripts)
+            {
+                if (player.playerSteamId == 0)
+                    continue;
+                var steamName = new Friend(player.playerSteamId).Name;
+                if (steamName == "[unknown]") continue;
+
+                if (player.playerUsername != steamName)
+                {
+                    player.playerUsername = steamName;
+                    player.usernameBillboardText.text = steamName;
+                }
+            }
+        }
+        private static ManualCameraRenderer manualCamera = null;
+        private static void UpdateMapScreenName()
+        {
+            var sor = StartOfRound.Instance;
+
+            if (manualCamera != null &&
+                manualCamera.targetedPlayer != null)
+            {
+                var player = manualCamera.targetedPlayer;
+                if (sor.mapScreenPlayerName.text != player.playerUsername)
+                {
+                    sor.mapScreenPlayerName.text = player.playerUsername;
+                }
+            }
+        }
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(GameNetworkManager), "SteamMatchmaking_OnLobbyMemberJoined")]
+        public static void LobbyJoinedPatch()
+        {
+            RefreshAllPlayerNames();
+        }
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(PlayerControllerB), "SendNewPlayerValuesClientRpc")]
+        public static void NewPlayerValuesPatch()
+        {
+            RefreshAllPlayerNames();
+        }
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(StartOfRound), "OnPlayerConnectedClientRpc")]
+        public static void PlayerConnectedPatch()
+        {
+            RefreshAllPlayerNames();
+        }
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(PlayerControllerB), "ConnectClientToPlayerObject")]
+        public static void ConnectToPlayerPatch()
+        {
+            RefreshAllPlayerNames();
+        }
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(StartOfRound), "StartGame")]
+        public static void StartGamePatch()
+        {
+            RefreshAllPlayerNames();
         }
     }
 }
