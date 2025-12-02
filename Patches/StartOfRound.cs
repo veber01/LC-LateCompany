@@ -165,6 +165,18 @@ internal static class StartOfRoundPatch
             bool hasOpenSlot = StartOfRound.Instance.connectedPlayersAmount + 1 < StartOfRound.Instance.allPlayerScripts.Length;
             SetLobbyVisibility(hasOpenSlot);
             ExtendedLateCompany.SetLobbyJoinable(hasOpenSlot);
+            //hopefully this works xD
+            GameNetworkManager.Instance.connectedPlayers = StartOfRound.Instance.connectedPlayersAmount+1;
+
+//            for (int i = 0; i < StartOfRound.Instance.allPlayerScripts.Length; i++)
+//            {
+//                var quickMenu = UnityEngine.Object.FindObjectOfType<QuickMenuManager>();
+//                var player = StartOfRound.Instance.allPlayerScripts[i];
+//                var slot = quickMenu.playerListSlots[i];
+//                ExtendedLateCompany.Logger.LogWarning(player.playerClientId);
+//                ExtendedLateCompany.Logger.LogWarning("GNM Connected players: "+GameNetworkManager.Instance.connectedPlayers);
+//                ExtendedLateCompany.Logger.LogWarning("SOR Connected players: "+StartOfRound.Instance.connectedPlayersAmount);
+//            }
         }
     }
 }

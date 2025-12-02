@@ -1,7 +1,12 @@
-# v1.0.6
+# v1.0.7
 # This is a beta release, it wasnt fully tested, there could be issues related to new fixes that i added. Please report any bugs and errors on the Github page or my discord "happyness"
 
-- Implmenting a fix for "Unknown" name for late joiners.
+- Late joiners should be able to join now when the lobby is not full.
+- Should correctly show the right amount of players on the lobby list.
+
+# v1.0.6
+
+- Implementing a fix for "Unknown" name for late joiners.
 
 # v1.0.5
 - Removed a broken logic. It was causing issues with some other mods.

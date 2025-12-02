@@ -16,9 +16,11 @@ Bugs that are already fixed and im aiming to fix.
 
 :white_check_mark: Lobby gets removed from the list after game has started
 
-:no_entry: Players sometimes unable to join even when the lobby is not full
+:white_check_mark: Players sometimes unable to join even when the lobby is not full
 
-:no_entry: Lobby shows the correct amount of players present in the lobby on the list
+:white_check_mark: Lobby shows the correct amount of players present in the lobby on the list
+
+:no_entry: Weather not being syncronized
 
 
 ## NOTICE
