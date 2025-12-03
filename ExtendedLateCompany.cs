@@ -19,13 +19,5 @@ internal class ExtendedLateCompany : BaseUnityPlugin
 		Logger.Log(LogLevel.Info, "Extended Late Company has loaded!");
 
 	}
-    public static bool LobbyJoinable = true;
-    static public void SetLobbyJoinable(bool joinable)
-    {
-		LobbyJoinable = joinable;
-		GameNetworkManager.Instance.SetLobbyJoinable(joinable);
-		QuickMenuManager quickMenu = Object.FindObjectOfType<QuickMenuManager>();
-		if (quickMenu) quickMenu.inviteFriendsTextAlpha.alpha = joinable ? 1f : 0.2f;
-	}
 }
 }

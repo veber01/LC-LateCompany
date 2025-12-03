@@ -16,7 +16,7 @@ internal static class InviteFriendsButton_Patch
 	[HarmonyPrefix]
 	private static bool Prefix()
 	{
-		if (ExtendedLateCompany.LobbyJoinable && !GameNetworkManager.Instance.disableSteam) GameNetworkManager.Instance.InviteFriendsUI();
+		if (LobbyManager.currentLobbyVisible && !GameNetworkManager.Instance.disableSteam) GameNetworkManager.Instance.InviteFriendsUI();
 		return false;
 	}
 }

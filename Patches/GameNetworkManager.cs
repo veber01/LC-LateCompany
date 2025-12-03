@@ -1,6 +1,7 @@
 using Unity.Netcode;
 using HarmonyLib;
-namespace ExtendedLateCompany.Patches;
+namespace ExtendedLateCompany.Patches
+{
 [HarmonyPatch(typeof(GameNetworkManager), nameof(GameNetworkManager.LeaveLobbyAtGameStart))]
 [HarmonyWrapSafe]
 internal static class LeaveLobbyAtGameStart_Patch
@@ -19,10 +20,12 @@ internal static class ConnectionApproval_Patch
 	private static void Postfix(ref NetworkManager.ConnectionApprovalRequest request, ref NetworkManager.ConnectionApprovalResponse response) {
 		if (request.ClientNetworkId == NetworkManager.Singleton.LocalClientId)
 			return;
-		if (ExtendedLateCompany.LobbyJoinable && response.Reason == "Game has already started!")
+		if (LobbyManager.currentLobbyVisible && response.Reason == "Game has already started!")
 		{
+			ExtendedLateCompany.Logger.LogWarning($"[ELC GNM] Allowing late joiner {request.ClientNetworkId}");
 			response.Reason = "";
 			response.Approved = true;
 		}
 	}
+}
 }

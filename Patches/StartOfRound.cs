@@ -13,32 +13,20 @@ namespace ExtendedLateCompany.Patches;
 
 internal static class StartOfRoundPatch
 {
-    
-    private static void SetLobbyVisibility(bool visible)
-    {
-        if (!GameNetworkManager.Instance.currentLobby.HasValue) return;
-        var lobby = GameNetworkManager.Instance.currentLobby.Value;
-        ExtendedLateCompany.SetLobbyJoinable(visible);
-        lobby.SetData("joinable", visible ? "true" : "false");
-    }
-
     [HarmonyPatch(typeof(StartOfRound), "OnPlayerConnectedClientRpc")]
     [HarmonyWrapSafe]
     private static class OnPlayerConnectedClientRpc_Patch
     {
         private static void UpdateControlledState()
         {
-            
             for (int j = 0; j < StartOfRound.Instance.connectedPlayersAmount + 1; j++)
             {
-                
                 if ((j == 0 || !StartOfRound.Instance.allPlayerScripts[j].IsOwnedByServer) && !StartOfRound.Instance.allPlayerScripts[j].isPlayerDead)
                 {
                     StartOfRound.Instance.allPlayerScripts[j].isPlayerControlled = true;
                 }
             }
         }
-
         [HarmonyTranspiler]
         private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
@@ -51,7 +39,7 @@ internal static class StartOfRoundPatch
             {
                 if (!alreadyReplaced)
                 {
-                    if (!foundInitial && instruction.opcode == OpCodes.Call && 
+                    if (!foundInitial && instruction.opcode == OpCodes.Call &&
                         instruction.operand?.ToString().Contains("setPlayerToSpawnPosition") == true)
                     {
                         foundInitial = true;
@@ -65,7 +53,7 @@ internal static class StartOfRoundPatch
                     {
                         shouldSkip = false;
                         alreadyReplaced = true;
-                        newInstructions.Add(new CodeInstruction(OpCodes.Call, 
+                        newInstructions.Add(new CodeInstruction(OpCodes.Call,
                             AccessTools.Method(typeof(OnPlayerConnectedClientRpc_Patch), nameof(UpdateControlledState))));
                     }
                 }
@@ -73,19 +61,18 @@ internal static class StartOfRoundPatch
                     newInstructions.Add(instruction);
             }
 
-            if (!alreadyReplaced) 
-                ExtendedLateCompany.Logger.LogError("ELC: Failed to transpile OnPlayerConnectedClientRpc");
+            if (!alreadyReplaced)
+                ExtendedLateCompany.Logger.LogError("ELC SoR: Failed to transpile OnPlayerConnectedClientRpc");
 
             return newInstructions.AsEnumerable();
         }
-
         [HarmonyPostfix]
         private static void Postfix()
         {
             if (StartOfRound.Instance.connectedPlayersAmount + 1 >= StartOfRound.Instance.allPlayerScripts.Length)
             {
-                ExtendedLateCompany.SetLobbyJoinable(false);
-                SetLobbyVisibility(false);
+                ExtendedLateCompany.Logger.LogWarning("[ELC SoR] OnPlayerConnectedClientRpc: lobby is full -> hiding lobby via LobbyManager");
+                LobbyManager.SetLobbyVisible(false);
             }
         }
     }
@@ -102,11 +89,10 @@ internal static class StartOfRoundPatch
                 bool hasOpenSlot = StartOfRound.Instance.connectedPlayersAmount + 1 < StartOfRound.Instance.allPlayerScripts.Length;
                 if (hasOpenSlot)
                 {
-                    SetLobbyVisibility(true);
-                    ExtendedLateCompany.SetLobbyJoinable(true);
+                    ExtendedLateCompany.Logger.LogWarning($"[ELC SoR] OnPlayerDC: found open slot after player {playerObjectNumber} disconnected -> showing lobby via LobbyManager (hasOpenSlot={hasOpenSlot})");
+                    LobbyManager.SetLobbyVisible(true);
                 }
             }
-
             PlayerControllerB player = StartOfRound.Instance.allPlayerScripts[playerObjectNumber];
             player.activatingItem = false;
             player.bleedingHeavily = false;
@@ -151,8 +137,8 @@ internal static class StartOfRoundPatch
         [HarmonyPrefix]
         private static void Prefix()
         {
-            SetLobbyVisibility(false);
-            ExtendedLateCompany.SetLobbyJoinable(false);
+            ExtendedLateCompany.Logger.LogWarning("[ELC SoR] StartGame: ship lever pulled / startgame fired -> hiding lobby via LobbyManager");
+            LobbyManager.SetLobbyVisible(false);
         }
     }
 
@@ -163,20 +149,17 @@ internal static class StartOfRoundPatch
         private static void Postfix()
         {
             bool hasOpenSlot = StartOfRound.Instance.connectedPlayersAmount + 1 < StartOfRound.Instance.allPlayerScripts.Length;
-            SetLobbyVisibility(hasOpenSlot);
-            ExtendedLateCompany.SetLobbyJoinable(hasOpenSlot);
-            //hopefully this works xD
-            GameNetworkManager.Instance.connectedPlayers = StartOfRound.Instance.connectedPlayersAmount+1;
-
-//            for (int i = 0; i < StartOfRound.Instance.allPlayerScripts.Length; i++)
-//            {
-//                var quickMenu = UnityEngine.Object.FindObjectOfType<QuickMenuManager>();
-//                var player = StartOfRound.Instance.allPlayerScripts[i];
-//                var slot = quickMenu.playerListSlots[i];
-//                ExtendedLateCompany.Logger.LogWarning(player.playerClientId);
-//                ExtendedLateCompany.Logger.LogWarning("GNM Connected players: "+GameNetworkManager.Instance.connectedPlayers);
-//                ExtendedLateCompany.Logger.LogWarning("SOR Connected players: "+StartOfRound.Instance.connectedPlayersAmount);
-//            }
+            ExtendedLateCompany.Logger.LogWarning($"[ELC SoR] SetShipReadyToLand: updating lobby visibility based on slot availability -> hasOpenSlot={hasOpenSlot}");
+            LobbyManager.SetLobbyVisible(hasOpenSlot);
+            try
+            {
+                GameNetworkManager.Instance.connectedPlayers = StartOfRound.Instance.connectedPlayersAmount + 1;
+                ExtendedLateCompany.Logger.LogWarning($"[ELC SoR] SetShipReadyToLand: GameNetworkManager.connectedPlayers set to {GameNetworkManager.Instance.connectedPlayers}");
+            }
+            catch (Exception ex)
+            {
+                ExtendedLateCompany.Logger.LogWarning($"[ELC SoR] SetShipReadyToLand: failed to set GameNetworkManager.connectedPlayers: {ex}");
+            }
         }
     }
 }
