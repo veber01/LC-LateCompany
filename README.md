@@ -10,7 +10,7 @@ If the in-game invite menu is not working, then the steam overlay menu should wo
 
 Bugs that are already fixed and im aiming to fix.
 
-:white_check_mark: Late joiners have the name "Unknown"
+:no_entry: Late joiners have the name "Unknown"  (I broke the code, gonna have to check it)
 
 :white_check_mark: Late joiners might appear invisible
 
