@@ -22,7 +22,7 @@ internal static class ConnectionApproval_Patch
 			return;
 		if (LobbyManager.currentLobbyVisible && response.Reason == "Game has already started!")
 		{
-			ExtendedLateCompany.Logger.LogWarning($"[ELC GNM] Allowing late joiner {request.ClientNetworkId}");
+			ExtendedLateCompany.Logger.LogInfo($"[ELC GNM] Allowing late joiner {request.ClientNetworkId}");
 			response.Reason = "";
 			response.Approved = true;
 		}

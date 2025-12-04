@@ -139,6 +139,7 @@ internal static class StartOfRoundPatch
         {
             ExtendedLateCompany.Logger.LogWarning("[ELC SoR] StartGame: ship lever pulled / startgame fired -> hiding lobby via LobbyManager");
             LobbyManager.SetLobbyVisible(false);
+
         }
     }
 

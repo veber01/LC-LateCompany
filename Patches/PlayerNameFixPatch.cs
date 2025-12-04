@@ -16,16 +16,24 @@ namespace ExtendedLateCompany.Patches
     [HarmonyWrapSafe]
     public static class PlayerNameFixPatch
     {
+        public static StartOfRound playersManager;
+        public static ulong playerClientId;
         private static void RefreshAllPlayerNames()
         {
+            ExtendedLateCompany.Logger.LogWarning("RefreshAllPlayerNames called.");
             var sor = StartOfRound.Instance;
             var gnm = GameNetworkManager.Instance;
             if (sor == null || gnm == null) return;
+            ExtendedLateCompany.Logger.LogWarning("SOR and GNM !NULL");
             if (gnm.disableSteam) return;
+            ExtendedLateCompany.Logger.LogWarning("GNM.disableSteam !null");
             if (sor.allPlayerScripts == null) return;
+            ExtendedLateCompany.Logger.LogWarning("sor.allplayerscripts !NULL");
+            ExtendedLateCompany.Logger.LogWarning("Calling all local name updates and serverrpc to force refresh");
             UpdateQuickMenuNames();
             UpdateBillboardNames();
             UpdateMapScreenName();
+            ForceRefreshAllPlayerNames();
         }
         private static void UpdateQuickMenuNames()
         {
@@ -54,6 +62,7 @@ namespace ExtendedLateCompany.Patches
                     slot.playerSteamId = player.playerSteamId;
                 }
             }
+            ExtendedLateCompany.Logger.LogWarning("UpdateQuickMenuNames Updated");
         }
         private static void UpdateBillboardNames()
         {
@@ -72,6 +81,7 @@ namespace ExtendedLateCompany.Patches
                     player.usernameBillboardText.text = steamName;
                 }
             }
+            ExtendedLateCompany.Logger.LogWarning("UpdateBillboardNames Updated");
         }
         private static ManualCameraRenderer manualCamera = null;
         private static void UpdateMapScreenName()
@@ -87,33 +97,52 @@ namespace ExtendedLateCompany.Patches
                     sor.mapScreenPlayerName.text = player.playerUsername;
                 }
             }
+            ExtendedLateCompany.Logger.LogWarning("UpdateMapScreenName Updated");
+        }
+        public static void ForceRefreshAllPlayerNames()
+        {
+            var sor = StartOfRound.Instance;
+            if (sor == null) return;
+
+            for (int i = 0; i < sor.allPlayerScripts.Length; i++)
+            {
+                var player = sor.allPlayerScripts[i];
+                if (player == null) continue;
+
+                ulong steamId = player.playerSteamId;
+                if (steamId == 0) continue;
+                player.SendNewPlayerValuesServerRpc(steamId);
+            }
+            ExtendedLateCompany.Logger.LogWarning("ForceRefreshAllPlayerNames Updated");
         }
         [HarmonyPostfix]
-        [HarmonyPatch(typeof(GameNetworkManager), "SteamMatchmaking_OnLobbyMemberJoined")]
+        [HarmonyPatch(typeof(GameNetworkManager), nameof(GameNetworkManager.SteamMatchmaking_OnLobbyMemberJoined))]
         public static void LobbyJoinedPatch()
         {
             RefreshAllPlayerNames();
         }
         [HarmonyPostfix]
-        [HarmonyPatch(typeof(PlayerControllerB), "SendNewPlayerValuesClientRpc")]
+        [HarmonyPatch(typeof(PlayerControllerB), nameof(PlayerControllerB.SendNewPlayerValuesClientRpc))]
         public static void NewPlayerValuesPatch()
         {
+
+
             RefreshAllPlayerNames();
         }
         [HarmonyPostfix]
-        [HarmonyPatch(typeof(StartOfRound), "OnPlayerConnectedClientRpc")]
+        [HarmonyPatch(typeof(StartOfRound), nameof(StartOfRound.OnPlayerConnectedClientRpc))]
         public static void PlayerConnectedPatch()
         {
             RefreshAllPlayerNames();
         }
         [HarmonyPostfix]
-        [HarmonyPatch(typeof(PlayerControllerB), "ConnectClientToPlayerObject")]
+        [HarmonyPatch(typeof(PlayerControllerB), nameof(PlayerControllerB.ConnectClientToPlayerObject))]
         public static void ConnectToPlayerPatch()
         {
             RefreshAllPlayerNames();
         }
         [HarmonyPostfix]
-        [HarmonyPatch(typeof(StartOfRound), "StartGame")]
+        [HarmonyPatch(typeof(StartOfRound), nameof(StartOfRound.StartGame))]
         public static void StartGamePatch()
         {
             RefreshAllPlayerNames();

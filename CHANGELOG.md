@@ -1,3 +1,7 @@
+# v1.0.9
+
+- Added a sync function to PlayerNameFixPatch so clients can update their playernames locally.
+
 # v1.0.8
 
 - Added a LobbyManager which should reliably list and delist the lobby from the list.
