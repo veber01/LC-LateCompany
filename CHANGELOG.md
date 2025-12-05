@@ -1,6 +1,10 @@
+# v1.1.0
+
+- Rewrote the function to sync names
+
 # v1.0.9
 
-- Added a sync function to PlayerNameFixPatch so clients can update their playernames locally.
+- Added a sync function to PlayerNameFixPatch so clients can update their playernames locally. 
 
 # v1.0.8
 

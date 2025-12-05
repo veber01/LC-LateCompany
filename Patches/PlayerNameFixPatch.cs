@@ -2,13 +2,12 @@ using HarmonyLib;
 using UnityEngine;
 using GameNetcodeStuff;
 using Steamworks;
-using System;
-using System.Collections;
+using System.Linq;
+using Steamworks.Data;
+using System.Text.RegularExpressions;
+using Mono.Cecil.Cil;
 using System.Collections.Generic;
-using System.Reflection;
-using System.Text;
-using TMPro;
-using System.Runtime.CompilerServices;
+
 
 
 namespace ExtendedLateCompany.Patches
@@ -16,24 +15,17 @@ namespace ExtendedLateCompany.Patches
     [HarmonyWrapSafe]
     public static class PlayerNameFixPatch
     {
-        public static StartOfRound playersManager;
-        public static ulong playerClientId;
+        private static readonly Queue<ulong> pendingJoinedSteamIds = new Queue<ulong>();
         private static void RefreshAllPlayerNames()
         {
-            ExtendedLateCompany.Logger.LogWarning("RefreshAllPlayerNames called.");
             var sor = StartOfRound.Instance;
             var gnm = GameNetworkManager.Instance;
             if (sor == null || gnm == null) return;
-            ExtendedLateCompany.Logger.LogWarning("SOR and GNM !NULL");
             if (gnm.disableSteam) return;
-            ExtendedLateCompany.Logger.LogWarning("GNM.disableSteam !null");
             if (sor.allPlayerScripts == null) return;
-            ExtendedLateCompany.Logger.LogWarning("sor.allplayerscripts !NULL");
-            ExtendedLateCompany.Logger.LogWarning("Calling all local name updates and serverrpc to force refresh");
             UpdateQuickMenuNames();
             UpdateBillboardNames();
             UpdateMapScreenName();
-            ForceRefreshAllPlayerNames();
         }
         private static void UpdateQuickMenuNames()
         {
@@ -99,27 +91,17 @@ namespace ExtendedLateCompany.Patches
             }
             ExtendedLateCompany.Logger.LogWarning("UpdateMapScreenName Updated");
         }
-        public static void ForceRefreshAllPlayerNames()
-        {
-            var sor = StartOfRound.Instance;
-            if (sor == null) return;
-
-            for (int i = 0; i < sor.allPlayerScripts.Length; i++)
-            {
-                var player = sor.allPlayerScripts[i];
-                if (player == null) continue;
-
-                ulong steamId = player.playerSteamId;
-                if (steamId == 0) continue;
-                player.SendNewPlayerValuesServerRpc(steamId);
-            }
-            ExtendedLateCompany.Logger.LogWarning("ForceRefreshAllPlayerNames Updated");
-        }
-        [HarmonyPostfix]
+        [HarmonyPrefix]
         [HarmonyPatch(typeof(GameNetworkManager), nameof(GameNetworkManager.SteamMatchmaking_OnLobbyMemberJoined))]
-        public static void LobbyJoinedPatch()
+        public static void LobbyJoinedPatch(Lobby lobby, Friend friend)
         {
-            RefreshAllPlayerNames();
+            if (friend.Id != 0)
+            {
+                lock (pendingJoinedSteamIds)
+                {
+                    pendingJoinedSteamIds.Enqueue(friend.Id);
+                }
+            }
         }
         [HarmonyPostfix]
         [HarmonyPatch(typeof(PlayerControllerB), nameof(PlayerControllerB.SendNewPlayerValuesClientRpc))]
@@ -137,9 +119,29 @@ namespace ExtendedLateCompany.Patches
         }
         [HarmonyPostfix]
         [HarmonyPatch(typeof(PlayerControllerB), nameof(PlayerControllerB.ConnectClientToPlayerObject))]
-        public static void ConnectToPlayerPatch()
+        public static void ConnectToPlayerPatch(PlayerControllerB __instance)
         {
-            RefreshAllPlayerNames();
+            ulong idToSend = 0;
+
+            lock (pendingJoinedSteamIds)
+            {
+                if (pendingJoinedSteamIds.Count > 0)
+                {
+                    idToSend = pendingJoinedSteamIds.Dequeue();
+                }
+            }
+
+            if (idToSend != 0)
+            {
+                try
+                {
+                    __instance.SendNewPlayerValuesServerRpc(idToSend);
+                }
+                catch (System.Exception ex)
+                {
+                    ExtendedLateCompany.Logger.LogError($"Failed to call SendNewPlayerValuesServerRpc: {ex}");
+                }
+            }
         }
         [HarmonyPostfix]
         [HarmonyPatch(typeof(StartOfRound), nameof(StartOfRound.StartGame))]

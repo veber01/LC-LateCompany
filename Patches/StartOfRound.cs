@@ -81,6 +81,12 @@ internal static class StartOfRoundPatch
     [HarmonyWrapSafe]
     private static class OnPlayerDC_Patch
     {
+        [HarmonyPrefix]
+        private static void Prefix()
+        {
+            
+        }
+
         [HarmonyPostfix]
         private static void Postfix(int playerObjectNumber)
         {
