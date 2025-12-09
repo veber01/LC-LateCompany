@@ -7,6 +7,8 @@ using Steamworks.Data;
 using System.Text.RegularExpressions;
 using Mono.Cecil.Cil;
 using System.Collections.Generic;
+using UnityEngine.UI;
+using TMPro;
 
 
 
@@ -54,7 +56,6 @@ namespace ExtendedLateCompany.Patches
                     slot.playerSteamId = player.playerSteamId;
                 }
             }
-            ExtendedLateCompany.Logger.LogWarning("UpdateQuickMenuNames Updated");
         }
         private static void UpdateBillboardNames()
         {
@@ -73,7 +74,6 @@ namespace ExtendedLateCompany.Patches
                     player.usernameBillboardText.text = steamName;
                 }
             }
-            ExtendedLateCompany.Logger.LogWarning("UpdateBillboardNames Updated");
         }
         private static ManualCameraRenderer manualCamera = null;
         private static void UpdateMapScreenName()
@@ -89,7 +89,6 @@ namespace ExtendedLateCompany.Patches
                     sor.mapScreenPlayerName.text = player.playerUsername;
                 }
             }
-            ExtendedLateCompany.Logger.LogWarning("UpdateMapScreenName Updated");
         }
         [HarmonyPrefix]
         [HarmonyPatch(typeof(GameNetworkManager), nameof(GameNetworkManager.SteamMatchmaking_OnLobbyMemberJoined))]
@@ -148,6 +147,28 @@ namespace ExtendedLateCompany.Patches
         public static void StartGamePatch()
         {
             RefreshAllPlayerNames();
+        }
+
+        public static class SpectateModUtils
+        {
+            public static void ClearSpectateBox(PlayerControllerB leavingPlayer)
+            {
+                // Find the box associated with this player
+                var boxEntry = HUDManager.Instance.spectatingPlayerBoxes
+                    .FirstOrDefault(x => x.Value == leavingPlayer);
+                if (boxEntry.Key != null)
+                {
+                    var boxGO = boxEntry.Key.gameObject;
+                    var rawImage = boxGO.GetComponent<RawImage>();
+                    if (rawImage != null)
+                        rawImage.texture = null;
+                    var usernameText = boxGO.GetComponentInChildren<TextMeshProUGUI>();
+                    if (usernameText != null)
+                        usernameText.text = "";
+                    HUDManager.Instance.spectatingPlayerBoxes.Remove(boxEntry.Key);
+                    UnityEngine.Object.Destroy(boxGO);
+                }
+            }
         }
     }
 }

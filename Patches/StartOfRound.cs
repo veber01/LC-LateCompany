@@ -8,6 +8,8 @@ using GameNetcodeStuff;
 using Steamworks;
 using Steamworks.Data;
 using Steamworks.ServerList;
+using ExtendedLateCompany.Patches;
+using Unity.Netcode;
 
 namespace ExtendedLateCompany.Patches;
 
@@ -69,9 +71,13 @@ internal static class StartOfRoundPatch
         [HarmonyPostfix]
         private static void Postfix()
         {
+            if (!NetworkManager.Singleton.IsHost)
+            {
+                return;
+            }
+
             if (StartOfRound.Instance.connectedPlayersAmount + 1 >= StartOfRound.Instance.allPlayerScripts.Length)
             {
-                ExtendedLateCompany.Logger.LogWarning("[ELC SoR] OnPlayerConnectedClientRpc: lobby is full -> hiding lobby via LobbyManager");
                 LobbyManager.SetLobbyVisible(false);
             }
         }
@@ -84,18 +90,21 @@ internal static class StartOfRoundPatch
         [HarmonyPrefix]
         private static void Prefix()
         {
-            
+
         }
 
         [HarmonyPostfix]
         private static void Postfix(int playerObjectNumber)
         {
+            if (!NetworkManager.Singleton.IsHost)
+            {
+                return;
+            }
             if (StartOfRound.Instance.inShipPhase)
             {
                 bool hasOpenSlot = StartOfRound.Instance.connectedPlayersAmount + 1 < StartOfRound.Instance.allPlayerScripts.Length;
                 if (hasOpenSlot)
                 {
-                    ExtendedLateCompany.Logger.LogWarning($"[ELC SoR] OnPlayerDC: found open slot after player {playerObjectNumber} disconnected -> showing lobby via LobbyManager (hasOpenSlot={hasOpenSlot})");
                     LobbyManager.SetLobbyVisible(true);
                 }
             }
@@ -143,9 +152,11 @@ internal static class StartOfRoundPatch
         [HarmonyPrefix]
         private static void Prefix()
         {
-            ExtendedLateCompany.Logger.LogWarning("[ELC SoR] StartGame: ship lever pulled / startgame fired -> hiding lobby via LobbyManager");
+            if (!NetworkManager.Singleton.IsHost)
+            {
+                return;
+            }
             LobbyManager.SetLobbyVisible(false);
-
         }
     }
 
@@ -155,13 +166,16 @@ internal static class StartOfRoundPatch
         [HarmonyPostfix]
         private static void Postfix()
         {
+            if (!NetworkManager.Singleton.IsHost)
+            {
+                return;
+            }
+
             bool hasOpenSlot = StartOfRound.Instance.connectedPlayersAmount + 1 < StartOfRound.Instance.allPlayerScripts.Length;
-            ExtendedLateCompany.Logger.LogWarning($"[ELC SoR] SetShipReadyToLand: updating lobby visibility based on slot availability -> hasOpenSlot={hasOpenSlot}");
             LobbyManager.SetLobbyVisible(hasOpenSlot);
             try
             {
                 GameNetworkManager.Instance.connectedPlayers = StartOfRound.Instance.connectedPlayersAmount + 1;
-                ExtendedLateCompany.Logger.LogWarning($"[ELC SoR] SetShipReadyToLand: GameNetworkManager.connectedPlayers set to {GameNetworkManager.Instance.connectedPlayers}");
             }
             catch (Exception ex)
             {

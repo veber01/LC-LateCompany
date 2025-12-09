@@ -1,3 +1,8 @@
+# v1.1.1
+
+- Added a GUI to allow or disallow late joiners in game.
+- Previous profile pictures and names are removed from spectator mode. (only works for people with the mod)
+
 # v1.1.0
 
 - Rewrote the function to sync names
