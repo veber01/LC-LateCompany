@@ -21,6 +21,10 @@ internal static class StartOfRoundPatch
     {
         private static void UpdateControlledState()
         {
+            if (!NetworkManager.Singleton.IsHost)
+            {
+                return;
+            }
             for (int j = 0; j < StartOfRound.Instance.connectedPlayersAmount + 1; j++)
             {
                 if ((j == 0 || !StartOfRound.Instance.allPlayerScripts[j].IsOwnedByServer) && !StartOfRound.Instance.allPlayerScripts[j].isPlayerDead)
