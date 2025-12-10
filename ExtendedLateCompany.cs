@@ -70,7 +70,6 @@ public class DebugUI : MonoBehaviour
 		}
 
 		_menuOpen = value;
-		ExtendedLateCompany.ExtendedLateCompany.Logger.LogInfo($"ELC Ui: {_menuOpen}");
 	}
 	public void HideMenu()
 	{

@@ -32,6 +32,10 @@ namespace ExtendedLateCompany.Patches
 
         public static void SetLobbyVisible(bool visible)
         {
+            if (!NetworkManager.Singleton.IsHost)
+            {
+                return;
+            }
             if (currentLobbyVisible == visible) return;
 
             currentLobbyVisible = visible;

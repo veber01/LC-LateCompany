@@ -25,6 +25,7 @@ internal static class StartOfRoundPatch
             {
                 return;
             }
+
             for (int j = 0; j < StartOfRound.Instance.connectedPlayersAmount + 1; j++)
             {
                 if ((j == 0 || !StartOfRound.Instance.allPlayerScripts[j].IsOwnedByServer) && !StartOfRound.Instance.allPlayerScripts[j].isPlayerDead)
@@ -170,13 +171,9 @@ internal static class StartOfRoundPatch
         [HarmonyPostfix]
         private static void Postfix()
         {
-            if (!NetworkManager.Singleton.IsHost)
-            {
-                return;
-            }
-
             bool hasOpenSlot = StartOfRound.Instance.connectedPlayersAmount + 1 < StartOfRound.Instance.allPlayerScripts.Length;
             LobbyManager.SetLobbyVisible(hasOpenSlot);
+            ExtendedLateCompany.Logger.LogWarning(hasOpenSlot + "if true open lobby.");
             try
             {
                 GameNetworkManager.Instance.connectedPlayers = StartOfRound.Instance.connectedPlayersAmount + 1;

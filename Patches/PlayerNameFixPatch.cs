@@ -1,11 +1,8 @@
 using HarmonyLib;
-using UnityEngine;
 using GameNetcodeStuff;
 using Steamworks;
 using System.Linq;
 using Steamworks.Data;
-using System.Text.RegularExpressions;
-using Mono.Cecil.Cil;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using TMPro;
