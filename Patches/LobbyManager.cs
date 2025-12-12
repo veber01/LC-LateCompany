@@ -8,10 +8,6 @@ namespace ExtendedLateCompany.Patches
         public static bool currentLobbyVisible = true;
         public static void RefreshLobbyVisibility()
         {
-            if (!NetworkManager.Singleton.IsHost)
-            {
-                return;
-            }
             if (StartOfRound.Instance == null)
                 return;
             bool lateJoinEnabled = ExtendedLateCompany.LateJoin.Value;
@@ -29,18 +25,11 @@ namespace ExtendedLateCompany.Patches
             bool hasOpenSlot = StartOfRound.Instance.connectedPlayersAmount + 1 < StartOfRound.Instance.allPlayerScripts.Length;
             SetLobbyVisible(hasOpenSlot);
         }
-
         public static void SetLobbyVisible(bool visible)
         {
-            if (!NetworkManager.Singleton.IsHost)
-            {
-                return;
-            }
             if (currentLobbyVisible == visible) return;
-
             currentLobbyVisible = visible;
             ExtendedLateCompany.Logger.LogInfo($"[ELC LM] Lobby visibility changed to: {visible}");
-
             if (!GameNetworkManager.Instance.currentLobby.HasValue)
             {
                 return;
@@ -65,12 +54,10 @@ namespace ExtendedLateCompany.Patches
         {
             RefreshLobbyVisibility();
         }
-
         public static void OnPlayerLeft()
         {
             RefreshLobbyVisibility();
         }
-
         public static void OnShipPhaseChanged(bool inShipPhaseNow)
         {
             RefreshLobbyVisibility();

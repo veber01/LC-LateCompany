@@ -103,8 +103,6 @@ namespace ExtendedLateCompany.Patches
         [HarmonyPatch(typeof(PlayerControllerB), nameof(PlayerControllerB.SendNewPlayerValuesClientRpc))]
         public static void NewPlayerValuesPatch()
         {
-
-
             RefreshAllPlayerNames();
         }
         [HarmonyPostfix]
@@ -126,7 +124,6 @@ namespace ExtendedLateCompany.Patches
                     idToSend = pendingJoinedSteamIds.Dequeue();
                 }
             }
-
             if (idToSend != 0)
             {
                 try
@@ -145,7 +142,6 @@ namespace ExtendedLateCompany.Patches
         {
             RefreshAllPlayerNames();
         }
-
         public static class SpectateModUtils
         {
             public static void ClearSpectateBox(PlayerControllerB leavingPlayer)

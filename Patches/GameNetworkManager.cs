@@ -19,10 +19,6 @@ namespace ExtendedLateCompany.Patches
 		[HarmonyPostfix]
 		private static void Postfix(ref NetworkManager.ConnectionApprovalRequest request, ref NetworkManager.ConnectionApprovalResponse response)
 		{
-			if (!NetworkManager.Singleton.IsHost)
-			{
-				return;
-			}
 			if (request.ClientNetworkId == NetworkManager.Singleton.LocalClientId)
 				return;
 			if (LobbyManager.currentLobbyVisible && response.Reason == "Game has already started!")

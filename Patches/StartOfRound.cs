@@ -21,10 +21,6 @@ internal static class StartOfRoundPatch
     {
         private static void UpdateControlledState()
         {
-            if (!NetworkManager.Singleton.IsHost)
-            {
-                return;
-            }
 
             for (int j = 0; j < StartOfRound.Instance.connectedPlayersAmount + 1; j++)
             {
@@ -76,10 +72,6 @@ internal static class StartOfRoundPatch
         [HarmonyPostfix]
         private static void Postfix()
         {
-            if (!NetworkManager.Singleton.IsHost)
-            {
-                return;
-            }
 
             if (StartOfRound.Instance.connectedPlayersAmount + 1 >= StartOfRound.Instance.allPlayerScripts.Length)
             {
@@ -92,19 +84,9 @@ internal static class StartOfRoundPatch
     [HarmonyWrapSafe]
     private static class OnPlayerDC_Patch
     {
-        [HarmonyPrefix]
-        private static void Prefix()
-        {
-
-        }
-
         [HarmonyPostfix]
         private static void Postfix(int playerObjectNumber)
         {
-            if (!NetworkManager.Singleton.IsHost)
-            {
-                return;
-            }
             if (StartOfRound.Instance.inShipPhase)
             {
                 bool hasOpenSlot = StartOfRound.Instance.connectedPlayersAmount + 1 < StartOfRound.Instance.allPlayerScripts.Length;
@@ -150,7 +132,6 @@ internal static class StartOfRoundPatch
             player.voiceMuffledByEnemy = false;
         }
     }
-
     [HarmonyPatch(typeof(StartOfRound), nameof(StartOfRound.StartGame))]
     private static class StartGame_Patch
     {
@@ -164,13 +145,16 @@ internal static class StartOfRoundPatch
             LobbyManager.SetLobbyVisible(false);
         }
     }
-
     [HarmonyPatch(typeof(StartOfRound), "SetShipReadyToLand")]
     private static class SetShipReadyToLand_Patch
     {
         [HarmonyPostfix]
         private static void Postfix()
         {
+            if (!NetworkManager.Singleton.IsHost)
+            {
+                return;
+            }
             bool hasOpenSlot = StartOfRound.Instance.connectedPlayersAmount + 1 < StartOfRound.Instance.allPlayerScripts.Length;
             LobbyManager.SetLobbyVisible(hasOpenSlot);
             ExtendedLateCompany.Logger.LogWarning(hasOpenSlot + "if true open lobby.");

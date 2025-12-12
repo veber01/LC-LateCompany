@@ -101,24 +101,21 @@ public class DebugUI : MonoBehaviour
 
 	private void DrawWindow(int windowID)
 	{
-		// Toggles
-		ExtendedLateCompany.ExtendedLateCompany.LateJoin.Value = GUILayout.Toggle(
-			ExtendedLateCompany.ExtendedLateCompany.LateJoin.Value,
-			"Enable Late Joiners"
-		);
-
+		ExtendedLateCompany.ExtendedLateCompany.LateJoin.Value = GUILayout.Toggle(ExtendedLateCompany.ExtendedLateCompany.LateJoin.Value, "Enable Late Joiners");
 		if (GUILayout.Button("Apply and Refresh"))
 		{
 			ExtendedLateCompany.ExtendedLateCompany.Instance.Config.Save();
 			ExtendedLateCompany.Patches.LobbyManager.RefreshLobbyVisibility();
 		}
+		if (GUILayout.Button("ExperimentalRevivePlayers"))
+		{
+			StartOfRound.Instance.ReviveDeadPlayers();
 
 
+		}
 
-		GUI.DragWindow(); // make the window draggable
+		GUI.DragWindow();
 	}
-
-	// Harmony patches to open/close the menu with the game's QuickMenu
 	[HarmonyPatch(typeof(QuickMenuManager))]
 	public class QuickMenuPatch
 	{

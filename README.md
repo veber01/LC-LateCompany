@@ -10,13 +10,13 @@ If the in-game invite menu is not working, then the steam overlay menu should wo
 
 Bugs that are already fixed and im aiming to fix.
 
-:white_check_mark: Late joiners have the name "Unknown"
+:white_check_mark: Late joiners have the name "Unknown" (current fix only applies to players who has the mod installed)
 
 :white_check_mark: Late joiners might appear invisible
 
 :white_check_mark: Lobby gets removed from the list after game has started
 
-:white_check_mark: Players sometimes unable to join even when the lobby is not full
+:white_check_mark: Players sometimes unable to join even when the lobby is not full (in some rare cases this can happen)
 
 :white_check_mark: Lobby shows the correct amount of players present in the lobby on the list
 
