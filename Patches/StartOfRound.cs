@@ -164,7 +164,7 @@ internal static class StartOfRoundPatch
             }
             catch (Exception ex)
             {
-                ExtendedLateCompany.Logger.LogWarning($"[ELC SoR] SetShipReadyToLand: failed to set GameNetworkManager.connectedPlayers: {ex}");
+                ExtendedLateCompany.Logger.LogError($"[ELC SoR] SetShipReadyToLand: failed to set GameNetworkManager.connectedPlayers: {ex}");
             }
         }
     }

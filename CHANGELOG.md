@@ -1,7 +1,6 @@
 # v1.1.1
 
 - Added a GUI to allow or disallow late joiners in game.
-- Previous profile pictures and names are removed in spectator mode (only applies to players with the mod)
 - Trying a new method to fix the issue of invisible players when the previous owner dies and leaves mid-game.
 
 # v1.1.0

@@ -132,7 +132,7 @@ namespace ExtendedLateCompany.Patches
                 }
                 catch (System.Exception ex)
                 {
-                    ExtendedLateCompany.Logger.LogError($"Failed to call SendNewPlayerValuesServerRpc: {ex}");
+                    ExtendedLateCompany.Logger.LogError($"[ELC PName] Failed to call SendNewPlayerValuesServerRpc: {ex}");
                 }
             }
         }
@@ -146,7 +146,6 @@ namespace ExtendedLateCompany.Patches
         {
             public static void ClearSpectateBox(PlayerControllerB leavingPlayer)
             {
-                // Find the box associated with this player
                 var boxEntry = HUDManager.Instance.spectatingPlayerBoxes
                     .FirstOrDefault(x => x.Value == leavingPlayer);
                 if (boxEntry.Key != null)

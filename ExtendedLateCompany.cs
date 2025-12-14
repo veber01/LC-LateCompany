@@ -107,12 +107,6 @@ public class DebugUI : MonoBehaviour
 			ExtendedLateCompany.ExtendedLateCompany.Instance.Config.Save();
 			ExtendedLateCompany.Patches.LobbyManager.RefreshLobbyVisibility();
 		}
-		if (GUILayout.Button("ExperimentalRevivePlayers"))
-		{
-			StartOfRound.Instance.ReviveDeadPlayers();
-
-
-		}
 
 		GUI.DragWindow();
 	}

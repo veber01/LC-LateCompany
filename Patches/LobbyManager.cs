@@ -8,6 +8,10 @@ namespace ExtendedLateCompany.Patches
         public static bool currentLobbyVisible = true;
         public static void RefreshLobbyVisibility()
         {
+            if (!NetworkManager.Singleton.IsServer)
+            {
+                return;
+            }
             if (StartOfRound.Instance == null)
                 return;
             bool lateJoinEnabled = ExtendedLateCompany.LateJoin.Value;
@@ -27,6 +31,10 @@ namespace ExtendedLateCompany.Patches
         }
         public static void SetLobbyVisible(bool visible)
         {
+            if (!NetworkManager.Singleton.IsServer)
+            {
+                return;
+            }
             if (currentLobbyVisible == visible) return;
             currentLobbyVisible = visible;
             ExtendedLateCompany.Logger.LogInfo($"[ELC LM] Lobby visibility changed to: {visible}");
@@ -41,7 +49,7 @@ namespace ExtendedLateCompany.Patches
             }
             catch (System.Exception ex)
             {
-                ExtendedLateCompany.Logger.LogWarning($"[ELC LM] Failed to set lobby data: {ex.Message}");
+                ExtendedLateCompany.Logger.LogError($"[ELC LM] Failed to set lobby data: {ex.Message}");
             }
             GameNetworkManager.Instance.SetLobbyJoinable(visible);
             var quickMenu = Object.FindObjectOfType<QuickMenuManager>();
