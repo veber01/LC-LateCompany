@@ -374,8 +374,9 @@ namespace ExtendedLateCompany.Patches
             }
             GameObject oldPlayer = StartOfRound.Instance.allPlayerObjects[playerObjectNumber];
             PlayerControllerB oldController = oldPlayer != null ? oldPlayer.GetComponent<PlayerControllerB>() : null;
-            if (oldController != null && !oldController.isPlayerDead)
+            if (!oldController.isPlayerDead)
             {
+                ExtendedLateCompany.Logger.LogWarning(oldController.isPlayerDead);
                 ExtendedLateCompany.Logger.LogWarning("[ELC INV] Oldcontroller is not null, player is not dead");
                 return;
             }
@@ -395,13 +396,19 @@ namespace ExtendedLateCompany.Patches
             GameObject newPlayer = Object.Instantiate(safecopy);
             newPlayer.SetActive(true);
             PlayerControllerB pc = newPlayer.GetComponent<PlayerControllerB>();
+            if (pc == null)
+                ExtendedLateCompany.Logger.LogWarning("pc is null");
             pc.playerClientId = (ulong)playerObjectNumber;
             pc.actualClientId = (ulong)playerObjectNumber;
+            ExtendedLateCompany.Logger.LogWarning(pc.playerClientId);
+            ExtendedLateCompany.Logger.LogWarning(pc.actualClientId);
             // ResetValues(pc);
             pc.TeleportPlayer(StartOfRound.Instance.notSpawnedPosition.position);
             StartOfRound.Instance.allPlayerObjects[playerObjectNumber] = newPlayer;
             StartOfRound.Instance.allPlayerScripts[playerObjectNumber] = pc;
             NetworkObject newNet = newPlayer.GetComponent<NetworkObject>();
+            if(newNet == null)
+                ExtendedLateCompany.Logger.LogWarning("newNet is null");
             newNet.enabled = true;
             newNet.enabled = true;
             newNet.Spawn();
@@ -437,4 +444,5 @@ namespace ExtendedLateCompany.Patches
         }
     }
 }
+
 
