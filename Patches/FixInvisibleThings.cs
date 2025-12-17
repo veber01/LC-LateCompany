@@ -375,11 +375,7 @@ namespace ExtendedLateCompany.Patches
             GameObject oldPlayer = StartOfRound.Instance.allPlayerObjects[playerObjectNumber];
             PlayerControllerB oldController = oldPlayer != null ? oldPlayer.GetComponent<PlayerControllerB>() : null;
             if (!oldController.isPlayerDead)
-            {
-                ExtendedLateCompany.Logger.LogWarning(oldController.isPlayerDead);
-                ExtendedLateCompany.Logger.LogWarning("[ELC INV] Oldcontroller is not null, player is not dead");
-                return;
-            }
+                //hmmmmmmmmmmmmmmmmmmmmmmmmmm
             if (oldController != null)
             {
                 ExtendedLateCompany.Logger.LogWarning("[ELC INV] Oldcontroller not null, destroying old playerthings and spawning new.");
@@ -409,7 +405,6 @@ namespace ExtendedLateCompany.Patches
             NetworkObject newNet = newPlayer.GetComponent<NetworkObject>();
             if(newNet == null)
                 ExtendedLateCompany.Logger.LogWarning("newNet is null");
-            newNet.enabled = true;
             newNet.enabled = true;
             newNet.Spawn();
             newNet.RemoveOwnership();
@@ -444,5 +439,6 @@ namespace ExtendedLateCompany.Patches
         }
     }
 }
+
 
 
