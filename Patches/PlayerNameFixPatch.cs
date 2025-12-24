@@ -6,9 +6,6 @@ using Steamworks.Data;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using TMPro;
-
-
-
 namespace ExtendedLateCompany.Patches
 {
     [HarmonyWrapSafe]

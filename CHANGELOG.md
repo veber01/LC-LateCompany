@@ -1,7 +1,8 @@
 # v1.1.1
 
+- Some fixes here and there
 - Added a GUI to allow or disallow late joiners in game.
-- Trying a new method to fix the issue of invisible players when the previous owner dies and leaves mid-game.
+- Reverting to previous Invisible fix (only works for who has the mod)
 
 # v1.1.0
 

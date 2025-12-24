@@ -25,7 +25,6 @@ namespace ExtendedLateCompany
 			Harmony harmony = new Harmony(MyPluginInfo.PLUGIN_GUID);
 			harmony.PatchAll(typeof(ExtendedLateCompany).Assembly);
 			Logger.LogInfo("Extended Late Company has loaded!");
-			BGReplace.Init();
 			SceneManager.sceneLoaded += OnSceneLoaded;
 
 			LateJoin = Config.Bind("LateJoin", "EnableLateJoin", true, "Enable or disable Late Joiners");
