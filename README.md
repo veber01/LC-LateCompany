@@ -1,3 +1,10 @@
+# NOTE
+I have, for a long time ago, abandoned this project for my own good and sanity, thus archiving the repo.
+It is not in any shape that works and could work without time investment into figuring out workarounds and fixes to stuff
+
+
+
+
 # ExtendedLateCompany
 
 This is a forked version of the original LateCompany aiming at fixing the bugs and adding new features to the original.
